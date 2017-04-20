@@ -11,6 +11,12 @@ from lxml import html
 number_of_scraped = 0
 total_count = 0
 
+class Credentials():
+    def __init__(self):
+        with open('settings.conf', 'r') as file:
+            creds = json.loads(file.read())
+            self.user, self.password = creds['user'], creds['password']
+
 class Spider():
     main_page_url = 'https://searchicris.co.weld.co.us/recorder/web/login.jsp'
     wd = webdriver.PhantomJS(os.path.join(os.path.dirname(__file__), 'bin/phantomjs'))
@@ -34,9 +40,10 @@ class Spider():
         self.wd.get('https://searchicris.co.weld.co.us/recorder/eagleweb/docSearch.jsp')
 
     def main_page(self):
+        credentials = Credentials()
         self.wd.get(self.main_page_url)
-        self.wd.find_element_by_id('userId').send_keys() # login
-        self.wd.find_element_by_name('password').send_keys() # password
+        self.wd.find_element_by_id('userId').send_keys(credentials.user) # login
+        self.wd.find_element_by_name('password').send_keys(credentials.password) # password
         self.wd.find_elements_by_name('submit')[1].click()
 
     def pdf_link_by_doc_id(self, id):
